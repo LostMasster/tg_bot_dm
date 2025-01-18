@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+.idea/
+venv/
+/scripts_DM.docx
+json_file_dm/
+/parsing_DM_ru.py
+/script.py
