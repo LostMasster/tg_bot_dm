@@ -15,6 +15,7 @@ from parsing_DM_ru import parsing_http_dm
 from consultation2 import router_consultation
 from igbore_git import bot
 from game import router_game
+from crm import new_token_rm
 
 
 load_dotenv()
@@ -61,7 +62,7 @@ async def main():
         dp.include_router(router_consultation)
         dp.include_router(router_game)
         # dp.include_router(openai_bot_dm)
-        await asyncio.gather(dp.start_polling(bot), run_parsing_at_midnight())
+        await asyncio.gather(dp.start_polling(bot), run_parsing_at_midnight(), new_token_rm())
     except KeyboardInterrupt:
         print('Бот выключен пользователем')
     finally:

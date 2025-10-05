@@ -12,6 +12,9 @@ admin_id = os.getenv('admin_id')
 database_password = os.getenv('DATABASE_PASSWORD')
 consultant_1 = os.getenv('consultant_1')
 api_key = os.getenv('api_key')
+api_key_rm = os.getenv('api_key_rm')
+consultant_dm = os.getenv('consultant_dm')
+consultant_andrej = os.getenv(('consultant_andrej'))
 
 bot = Bot(token=tg_token)
 

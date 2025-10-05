@@ -1,6 +1,7 @@
 from aiogram import Router, types
 from aiogram.filters import CommandStart, Command
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup, Message, ReplyKeyboardMarkup,
+                           KeyboardButton, ReplyKeyboardRemove)
 from aiogram.fsm.context import FSMContext
 from postgre_sql import new_user
 import random
@@ -20,19 +21,33 @@ async def clear_state(message: Message, state: FSMContext):
     await message.answer("Состояние очищено.")
 
 
+# @router_comm.message(lambda message: message.contact is not None)
+# async def contact_handler(message: types.Message):
+#     print('Contact_handler принял сообщение')
+#     if message.contact:
+#         phone_number = message.contact.phone_number
+#         user_id = message.contact.user_id
+#
+#         # Удаляем клавиатуру после получения контакта
+#         await message.answer(
+#             f"Спасибо! Ваш номер телефона: {phone_number}\nВаш Telegram ID: {user_id}",
+#             reply_markup=ReplyKeyboardRemove()
+#         )
+
+
 # Хендлер на комманду /start
 @router_comm.message(CommandStart())
 async def cmd_start (message: Message):
     timesone = pytz.timezone('Europe/Berlin')
     time_now = datetime.now(timesone).strftime('%d.%m.%Y %H:%M:%S')
 
+    user_name = message.from_user.first_name
     user_id = message.from_user.id
     date_reg = time_now
 
     await new_user(user_id, date_reg)
 
     print(f'Команда старт {message.from_user.first_name}')
-    user_name = message.from_user.first_name
     # Создаем кнопки с именованными параметрами
     button_pl = InlineKeyboardButton(text='PL🇵🇱', callback_data=f'choice_language_pl')
     button_ua = InlineKeyboardButton(text='UA🇺🇦', callback_data=f'choice_language_ua')
@@ -57,7 +72,10 @@ async def cmd_start (message: Message):
 @router_comm.message(Command('menu'))
 async def menu_command_func(message: Message):
     user_id = message.from_user.id
-    await show_menu_func(user_id, users_languages[user_id])
+    try:
+        await show_menu_func(user_id, users_languages[user_id])
+    except:
+        await message.answer("Nie wybrałeś języka")
 
 
 # Меню кнопка "Забронировать ремонт"
@@ -65,7 +83,9 @@ async def menu_command_func(message: Message):
 async def cmd_repair_book(message: Message, state: FSMContext):
     print(f'Комманда repair_book {message.from_user.first_name}')
     data = await state.get_data()
-    language = data.get('language')
+    user_id = message.from_user.id
+    language = users_languages[user_id]
+    print(f'user: {message.from_user.first_name} язык: {language}')
     if language == 'ru':
         button_rodo = InlineKeyboardButton(text='Согласен',
                                            callback_data='form_start')
@@ -108,7 +128,7 @@ async def cmd_repair_book(message: Message, state: FSMContext):
 
 @router_comm.message(Command('game'))
 async def cmd_game_action(message: Message):
-    print(f'комманда service {message.from_user.first_name}')
+    print(f'комманда game {message.from_user.first_name}')
     button_action = [
         [InlineKeyboardButton(text='🎲 Показать число', callback_data='game_start')],
         [InlineKeyboardButton(text='✖️ Отмена', callback_data='game_end')]

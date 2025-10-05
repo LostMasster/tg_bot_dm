@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram import Router, F, types
 from aiogram.types import Message
 import asyncio
-from postgre_sql import users_languages, language
+from postgre_sql import users_languages, language_func
 from igbore_git import bot
 
 
@@ -18,11 +18,9 @@ class Form(StatesGroup):
 async def show_menu_func(user_id, language):
     global users_languages
 
-    if users_languages[user_id] != language:
-        users_languages[user_id] = language
-        print('добавлен')
-        await language(user_id, language)
-
+    users_languages[user_id] = language
+    print(f'добавлен {language}')
+    await language_func(user_id, language)
 
 
     if users_languages[user_id] == 'ru':
@@ -109,9 +107,9 @@ async def choice_language_func(callback_query: CallbackQuery):
     await callback_query.message.edit_reply_markup(reply_markup=None)
     chosen_language = callback_query.data.split('_')[2]
     user_id = callback_query.from_user.id
-    if users_languages[user_id] != chosen_language:
-        users_languages[user_id] = chosen_language
-        await language(user_id, chosen_language)
+
+    users_languages[user_id] = chosen_language
+    await language_func(user_id, chosen_language)
     await show_menu_func(user_id, chosen_language)
 
 

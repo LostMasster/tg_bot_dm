@@ -7,3 +7,5 @@ venv/
 json_file_dm/
 /parsing_DM_ru.py
 /script.py
+/token_rm.txt
+/test.py

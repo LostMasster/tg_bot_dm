@@ -12,6 +12,7 @@ CONSULTANTS = [admin_id, consultant_1]  # Замените на ID консул�
 active_chats = {}  # Пользователь -> Консультант
 consultant_status = {consultant: {"user_id": None, "role": None} for consultant in CONSULTANTS}  # Консультант -> Текущий пользователь
 
+
 # Определяем класс для CallbackData
 class ChatCallbackData(CallbackData, prefix="chat"):
     action: str
@@ -54,6 +55,7 @@ async def ask_consultant(callback_query: CallbackQuery):
 # Обработка принятия запроса консультантом
 @router_consultation.callback_query(ChatCallbackData.filter())
 async def accept_request(callback_query: CallbackQuery, callback_data: ChatCallbackData):
+    await callback_query.message.edit_reply_markup(reply_markup=None)
     consultant_id = callback_query.from_user.id
     user_id = callback_data.user_id
 
