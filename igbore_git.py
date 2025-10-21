@@ -14,7 +14,10 @@ consultant_1 = os.getenv('consultant_1')
 api_key = os.getenv('api_key')
 api_key_rm = os.getenv('api_key_rm')
 consultant_dm = os.getenv('consultant_dm')
-consultant_andrej = os.getenv(('consultant_andrej'))
+consultant_andrej = os.getenv('consultant_andrej')
+table_id = os.getenv('table_id')
+table_link = os.getenv('table_link')
+client_init = os.getenv("client_init")
 
 bot = Bot(token=tg_token)
 

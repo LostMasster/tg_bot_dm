@@ -11,7 +11,8 @@ from handler_rodo_form import router_rodo
 from handler_laptop_pc import router_laptop_pc
 from handler_apple_watch import router_apple_watch
 # from openai_bot import openai_bot_dm
-from parsing_DM_ru import parsing_http_dm
+# from parsing_DM_ru import parsing_http_dm
+from google_sheets_price import test_get_worksheet_info, get_all_data
 from consultation2 import router_consultation
 from igbore_git import bot
 from game import router_game
@@ -39,10 +40,11 @@ def time_until(hour, minute, timezone='Europe/Warsaw'):
 async def run_parsing_at_midnight():
     while True:
         # Вычисляем время до следующего запуска
-        seconds_to_wait = time_until(0, 0)  # Указываем время парсинга  сайта
+        seconds_to_wait = time_until(11, 7)  # Указываем время парсинга  сайта
         print(f"Ожидание до следующего запуска: {seconds_to_wait} секунд")
         await asyncio.sleep(seconds_to_wait)  # Ожидаем до целевого времени
-        await parsing_http_dm()  # Выполняем задачу
+        await test_get_worksheet_info()  # Выполняем задачу
+        await get_all_data()  # Выполняем задачу
 
 
 # Запуск процесса полинга новых апдейтов
@@ -62,7 +64,7 @@ async def main():
         dp.include_router(router_consultation)
         dp.include_router(router_game)
         # dp.include_router(openai_bot_dm)
-        await asyncio.gather(dp.start_polling(bot), run_parsing_at_midnight(), new_token_rm())
+        await asyncio.gather(dp.start_polling(bot), new_token_rm(), run_parsing_at_midnight())
     except KeyboardInterrupt:
         print('Бот выключен пользователем')
     finally:

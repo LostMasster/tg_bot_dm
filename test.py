@@ -6,6 +6,9 @@ import pytz
 import os
 import requests
 from igbore_git import api_key_rm
+from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup, Message, ReplyKeyboardMarkup,
+                           KeyboardButton, ReplyKeyboardRemove)
+from postgre_sql import users_languages
 
 
 async def day_until_birthday(date):
@@ -297,4 +300,90 @@ async def new_device():
 # file_temp.close()
 # os.remove(r'C:\Users\hp\Desktop\Birthday_bot\text.txt')
 # os.rename(r'C:\Users\hp\Desktop\Birthday_bot\temp_text.txt', r'C:\Users\hp\Desktop\Birthday_bot\text.txt')
+
+
+async def menu_buttons(user_language, mode=0):
+    try:
+        buttons = []
+        if user_language == 'ru':
+            buttons.append([InlineKeyboardButton(text='📞 Связаться с менеджером',
+                                                 callback_data=f'ask_consultant')],)
+            buttons.append([InlineKeyboardButton(text='🛠️ Записаться на ремонт',
+                                                 callback_data='get_sign_up_for_repairs')])
+            buttons.append([InlineKeyboardButton(text='🔄 Вернуться к предыдущему меню',
+                                                 callback_data='get_phone_iphone')])
+            buttons.append([InlineKeyboardButton(text='🔙 Вернуться в главное меню',
+                                                 callback_data=f'choice_language_{user_language}')])
+            if mode == 1:
+                button = [InlineKeyboardButton(text="❓ Разница между копией и оригиналом",
+                                              callback_data="get_model_iphone_1_1_orig-or-copy-disp")]
+                buttons.append(button)
+            if mode == 2:
+                button = [InlineKeyboardButton(text="❓ Разница между копией и оригиналом",
+                                               callback_data="get_model_iphone_1_1_orig-or-copy-bat")]
+                buttons.append(button)
+            keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+            return keyboard
+
+        elif user_language == 'ua':
+            buttons.append([InlineKeyboardButton(text="📞 Зв'язатися з менеджером",
+                                                 callback_data=f'ask_consultant')],)
+            buttons.append([InlineKeyboardButton(text='🛠️ Записатися на ремонт',
+                                                 callback_data='get_sign_up_for_repairs')])
+            buttons.append([InlineKeyboardButton(text='🔄 Повернутися до попереднього меню',
+                                                 callback_data='get_phone_iphone')])
+            buttons.append([InlineKeyboardButton(text='🔙 Повернутися до головного меню',
+                                                 callback_data=f'choice_language_{user_language}')])
+            if mode == 1:
+                button = [InlineKeyboardButton(text="❓ Різниця між копією та оригіналом",
+                                               callback_data="get_model_iphone_1_1_orig-or-copy-disp")]
+                buttons.append(button)
+            if mode == 2:
+                button = [InlineKeyboardButton(text="❓ Різниця між копією та оригіналом",
+                                               callback_data="get_model_iphone_1_1_orig-or-copy-bat")]
+                buttons.append(button)
+            keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+            return keyboard
+
+        elif user_language == 'en':
+            buttons.append([InlineKeyboardButton(text='📞 Contact the manager',
+                                                 callback_data=f'ask_consultant')],)
+            buttons.append([InlineKeyboardButton(text='🛠️ Book a repair',
+                                                 callback_data='get_sign_up_for_repairs')])
+            buttons.append([InlineKeyboardButton(text='🔄 Return to previous menu',
+                                                 callback_data='get_phone_iphone')])
+            buttons.append([InlineKeyboardButton(text='🔙 Return to main menu',
+                                                 callback_data=f'choice_language_{user_language}')])
+            if mode == 1:
+                button = [InlineKeyboardButton(text="❓ Difference between a copy and the original",
+                                               callback_data="get_model_iphone_1_1_orig-or-copy-disp")]
+                buttons.append(button)
+            if mode == 2:
+                button = [InlineKeyboardButton(text="❓ Difference between a copy and the original",
+                                               callback_data="get_model_iphone_1_1_orig-or-copy-bat")]
+                buttons.append(button)
+            keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+            return keyboard
+
+        else:
+            buttons.append([InlineKeyboardButton(text='📞 Skontaktuj się z menedżerem',
+                                                 callback_data=f'ask_consultant')],)
+            buttons.append([InlineKeyboardButton(text='🛠️ Umów się na naprawę',
+                                                 callback_data='get_sign_up_for_repairs')])
+            buttons.append([InlineKeyboardButton(text='🔄 Powrót do poprzedniego menu',
+                                                 callback_data='get_phone_iphone')])
+            buttons.append([InlineKeyboardButton(text='🔙 Powrót do menu głównego',
+                                                 callback_data=f'choice_language_{user_language}')])
+            if mode == 1:
+                button = [InlineKeyboardButton(text="❓ Różnica między kopią a oryginałem",
+                                               callback_data="get_model_iphone_1_1_orig-or-copy-disp")]
+                buttons.append(button)
+            if mode == 2:
+                button = [InlineKeyboardButton(text="❓ Różnica między kopią a oryginałem",
+                                               callback_data="get_model_iphone_1_1_orig-or-copy-bat")]
+                buttons.append(button)
+            keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+            return keyboard
+    except KeyError:
+        return 'Nie wybrałeś języka'
 

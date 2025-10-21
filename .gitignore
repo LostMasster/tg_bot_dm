@@ -5,6 +5,7 @@ __pycache__/
 venv/
 /scripts_DM.docx
 json_file_dm/
+json_files_dm_sheet/
 /parsing_DM_ru.py
 /script.py
 /token_rm.txt

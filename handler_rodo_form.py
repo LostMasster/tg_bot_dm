@@ -9,8 +9,10 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from igbore_git import tg_token, admin_id, consultant_dm, consultant_andrej
 from datetime import datetime, timedelta
+from postgre_sql import users_languages
 import pytz
 from crm import new_lead
+from aiogram.utils.markdown import hlink
 
 
 dp = Dispatcher(storage=MemoryStorage())
@@ -26,19 +28,71 @@ formatted_now = now.strftime("%d.%m.%Y %H:%M:%S")
 @router_rodo.callback_query(lambda c: c.data == 'get_sign_up_for_repairs')
 async def handler_get_rodo(callback_query: CallbackQuery):
     await callback_query.message.edit_reply_markup(reply_markup=None)
+    rodo_link = hlink("ознакомьтесь с важной информацией","https://dmajster.pl/polityka-prywatnosci")
 
-    button_rodo = InlineKeyboardButton(text='Согласен', callback_data='form_start')
-    button_cancel = InlineKeyboardButton(text='Отмена формы', callback_data='form_cancel')
+    user_id = callback_query.from_user.id
+    print(f"принимаем квиташку, язык пользователя: {users_languages[user_id]}")
 
-    # Используем список с одной строкой
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_rodo], [button_cancel]])
+    if users_languages[user_id] == "ru":
+        button_rodo = InlineKeyboardButton(text='Согласен', callback_data='form_start')
+        button_cancel = InlineKeyboardButton(text='Отмена формы', callback_data='form_cancel')
+        text = (f'👋 Отлично! Давайте запишем вас на ремонт.\n\n'
+                f'Перед этим, пожалуйста, \n<a href="https://dmajster.pl/polityka-prywatnosci">'
+                f'👉ознакомьтесь с важной информацией👈</a>:\n'
+                f'Нам потребуется ваше имя, номер телефона и данные об устройстве, чтобы оформить заявку и связаться с вами.\n'
+                f'🔒 Мы используем эти данные только для записи на ремонт и не передаём их третьим лицам.\n\n'
+                f'💡 Если вы согласны, нажмите "Согласен", и мы сразу начнём! 😊')
 
-    await callback_query.message.answer('👋 Отлично! Давайте запишем вас на ремонт.\n\n'
-                                        'Перед этим, пожалуйста, ознакомьтесь с важной информацией:\n'
-                                        'Нам потребуется ваше имя, номер телефона и данные об устройстве, чтобы оформить заявку и связаться с вами.\n'
-                                        '🔒 Мы используем эти данные только для записи на ремонт и не передаём их третьим лицам.\n\n'
-                                        '💡 Если вы согласны, нажмите "Согласен", и мы сразу начнём! 😊',
-                                        reply_markup=keyboard)
+        # Используем список с одной строкой
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_rodo], [button_cancel]])
+
+        await callback_query.message.answer(f"{text}", reply_markup=keyboard, parse_mode="HTML")
+
+    elif users_languages[user_id] == "ua":
+        button_rodo = InlineKeyboardButton(text='Погоджуюсь', callback_data='form_start')
+        button_cancel = InlineKeyboardButton(text='Скасувати форму', callback_data='form_cancel')
+
+        text = (
+            "👋 Чудово! Давайте запишемо вас на ремонт.\n\n"
+            "Перед цим, будь ласка, \n<a href='https://dmajster.pl/polityka-prywatnosci'>"
+            "👉ознайомтеся з важливою інформацією👈</a>:\n"
+            "Нам знадобиться ваше ім’я, номер телефону та дані пристрою, щоб оформити заявку і зв’язатися з вами.\n"
+            "🔒 Ми використовуємо ці дані лише для запису на ремонт і не передаємо їх третім особам.\n\n"
+            "💡 Якщо ви згодні, натисніть «Погоджуюсь», і ми одразу почнемо! 😊"
+        )
+
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_rodo], [button_cancel]])
+        await callback_query.message.answer(text, reply_markup=keyboard, parse_mode="HTML")
+
+    elif users_languages[user_id] == "en":
+        button_rodo = InlineKeyboardButton(text='Agree', callback_data='form_start')
+        button_cancel = InlineKeyboardButton(text='Cancel form', callback_data='form_cancel')
+
+        text = (
+            "👋 Great! Let's get you scheduled for a repair.\n\n"
+            "Before we begin, please read this important information:\n"
+            "We’ll need your name, phone number, and device details to create a request and contact you.\n"
+            "🔒 We use this data only for repair registration and do not share it with third parties.\n\n"
+            "💡 If you agree, click “Agree” and we’ll get started right away! 😊"
+        )
+
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_rodo], [button_cancel]])
+        await callback_query.message.answer(text, reply_markup=keyboard)
+
+    else:
+        button_rodo = InlineKeyboardButton(text='Zgadzam się', callback_data='form_start')
+        button_cancel = InlineKeyboardButton(text='Anuluj formularz', callback_data='form_cancel')
+
+        text = (
+            "👋 Świetnie! Zapiszmy Cię na naprawę.\n\n"
+            "Zanim zaczniemy, zapoznaj się proszę z ważnymi informacjami:\n"
+            "Potrzebujemy Twojego imienia, numeru telefonu i danych urządzenia, aby zarejestrować zgłoszenie i się z Tobą skontaktować.\n"
+            "🔒 Używamy tych danych wyłącznie do rejestracji naprawy i nie przekazujemy ich osobom trzecim.\n\n"
+            "💡 Jeśli się zgadzasz, kliknij „Zgadzam się” i zaczniemy! 😊"
+        )
+
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_rodo], [button_cancel]])
+        await callback_query.message.answer(text, reply_markup=keyboard)
 
 
 # FSM: Определяем состояния для формы
@@ -54,6 +108,8 @@ class Form(StatesGroup):
 @router_rodo.callback_query(lambda c: c.data == 'form_start')
 async def form_start(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.message.edit_reply_markup(reply_markup=None)
+    user_id = callback_query.from_user.id
+    await state.update_data(user_language=users_languages[user_id])
     # Сохраняем дату согласия РОДО
     await state.update_data(push_button_time=formatted_now)
 
